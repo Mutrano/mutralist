@@ -2,29 +2,38 @@ package com.mutra.todo.domain;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 @Entity
+@Table(name = "tb_user")
 public class User implements Serializable{
 	private static final long serialVersionUID = 1L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer id;
+	private Long id;
 	
 	private String name;
 	private String email;
 	private String password;
 	private LocalDate registrationDate;
 	
+	@OneToMany(mappedBy="user")
+	private
+	List<Todo> todos= new ArrayList<>();
+	
 	public User() {
 	}
 
-	public User(Integer id, String name, String email,String password, LocalDate registrationDate) {
+	public User(Long id, String name, String email,String password, LocalDate registrationDate) {
 		this.id = id;
 		this.name = name;
 		this.email=email;
@@ -32,11 +41,11 @@ public class User implements Serializable{
 		this.registrationDate = registrationDate;
 	}
 
-	public Integer getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(Integer id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
@@ -72,6 +81,14 @@ public class User implements Serializable{
 		this.registrationDate = registrationDate;
 	}
 
+	public List<Todo> getTodos() {
+		return todos;
+	}
+
+	public void setTodos(List<Todo> todos) {
+		this.todos = todos;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -96,6 +113,8 @@ public class User implements Serializable{
 			return false;
 		return true;
 	}
+
+
 	
 	
 }

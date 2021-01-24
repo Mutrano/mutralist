@@ -1,6 +1,5 @@
 package com.mutra.todo.services;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -11,29 +10,28 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
-import com.mutra.todo.domain.User;
-import com.mutra.todo.repositories.UserRepository;
+import com.mutra.todo.domain.Todo;
+import com.mutra.todo.repositories.TodoRepository;
 import com.mutra.todo.services.exceptions.DatabaseException;
 import com.mutra.todo.services.exceptions.ResourceNotFoundException;
 
 @Service
-public class UserService {
+public class TodoService {
 	
 	@Autowired
-	private UserRepository repository;
+	private TodoRepository repository;
 	
 
-	public List<User> findAll() {
+	public List<Todo> findAll() {
 		return repository.findAll();
 	}
 
-	public User findById(Long id) {
-		Optional<User> obj = repository.findById(id);
+	public Todo findById(Long id) {
+		Optional<Todo> obj = repository.findById(id);
 		return obj.orElseThrow( () -> new ResourceNotFoundException(id)  );
 	}
 
-	public User insert(User obj) {
-		obj.setRegistrationDate(LocalDate.now());
+	public Todo insert(Todo obj) {
 		return repository.save(obj);
 	}
 	
@@ -49,10 +47,9 @@ public class UserService {
 		}
 		
 	}
-	public User update(Long id,User obj) {
+	public Todo update(Long id,Todo obj) {
 		try {
-			System.out.println("velho do ceu o numero eh "+id);
-			User entity = repository.getOne(id);
+			Todo entity = repository.getOne(id);
 			updateData(entity,obj);
 			return repository.save(entity);
 		}
@@ -61,10 +58,9 @@ public class UserService {
 		}
 	}
 
-	private void updateData(User entity, User obj) {
-		entity.setName(obj.getName());
-		entity.setEmail(obj.getEmail());
-		entity.setPassword(obj.getPassword());
+	private void updateData(Todo entity, Todo obj) {
+		entity.setText(obj.getText());
+		entity.setDueDate(obj.getDueDate());
 	}
 }
 	
