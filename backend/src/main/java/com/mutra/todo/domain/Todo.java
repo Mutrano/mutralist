@@ -71,7 +71,7 @@ public class Todo implements Serializable {
 	public void setDueDate(LocalDate dueDate) {
 		this.dueDate = dueDate;
 	}
-
+	
 	@JsonIgnore
 	public User getUser() {
 		return user;

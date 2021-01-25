@@ -3,6 +3,7 @@ package com.mutra.todo.services;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.persistence.EntityNotFoundException;
 
@@ -10,8 +11,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.mutra.todo.domain.Todo;
 import com.mutra.todo.domain.User;
+import com.mutra.todo.dto.NewUserDTO;
+import com.mutra.todo.dto.UserDTO;
 import com.mutra.todo.repositories.UserRepository;
 import com.mutra.todo.services.exceptions.DatabaseException;
 import com.mutra.todo.services.exceptions.ResourceNotFoundException;
@@ -22,19 +27,29 @@ public class UserService {
 	@Autowired
 	private UserRepository repository;
 	
-
-	public List<User> findAll() {
-		return repository.findAll();
+	@Transactional(readOnly=true)
+	public List<UserDTO> findAll() {
+		List<User> list = repository.findAll();
+		 return list.stream().map(x -> new UserDTO(x)).collect(Collectors.toList());
 	}
-
-	public User findById(Long id) {
+	@Transactional(readOnly=true)
+	public UserDTO findById(Long id) {
 		Optional<User> obj = repository.findById(id);
-		return obj.orElseThrow( () -> new ResourceNotFoundException(id)  );
-	}
 
-	public User insert(User obj) {
-		obj.setRegistrationDate(LocalDate.now());
-		return repository.save(obj);
+		
+		if(obj.isPresent()) {
+			return new UserDTO(obj.get());
+			
+		}
+		else {
+			throw new ResourceNotFoundException(id);
+		}
+	}
+	public UserDTO insert(NewUserDTO dto) {
+		dto.setRegistrationDate(LocalDate.now());
+		User user = new User(null,dto.getName() ,dto.getEmail(),dto.getUsername(),dto.getPassword(),dto.getRegistrationDate());
+		user = repository.save(user);
+		return new UserDTO(user);
 	}
 	
 	public void delete(Long id) {
@@ -49,22 +64,41 @@ public class UserService {
 		}
 		
 	}
-	public User update(Long id,User obj) {
+	public UserDTO update(Long id,UserDTO obj) {
 		try {
 			System.out.println("velho do ceu o numero eh "+id);
 			User entity = repository.getOne(id);
 			updateData(entity,obj);
-			return repository.save(entity);
+			entity= repository.save(entity);
+			return toDTO(entity);
 		}
 		catch(EntityNotFoundException e) {
 			throw new ResourceNotFoundException(id);
 		}
 	}
 
-	private void updateData(User entity, User obj) {
+	private void updateData(User entity, UserDTO obj) {
 		entity.setName(obj.getName());
 		entity.setEmail(obj.getEmail());
-		entity.setPassword(obj.getPassword());
+		entity.setUsername(obj.getUsername());
+	}
+	
+	public List<Todo> findTodos(Long id){
+		Optional<User> obj = repository.findById(id);
+		if(obj.isPresent()) {
+			return obj.get().getTodos();
+		}
+		else {
+			throw new ResourceNotFoundException(id);
+		}
+	}
+	public User fromDTO(NewUserDTO obj) {
+		User user = new User(obj.getId(),obj.getName(), obj.getEmail(),obj.getUsername(),obj.getPassword(), obj.getRegistrationDate());
+		return user;
+	}
+	public UserDTO toDTO(User obj) {
+		UserDTO userDto = new UserDTO(obj);
+		return userDto;
 	}
 }
 	

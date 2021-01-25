@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -29,32 +28,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		}
 		
 		http.cors().and().csrf().disable();
-					
-		http.cors().and()
-	        .authorizeRequests()
-	        	.antMatchers(HttpMethod.GET, "/user/info", "/api/foos/**")
-	        		.hasAuthority("SCOPE_read")
-	        	.antMatchers(HttpMethod.POST, "/api/foos")
-	        		.hasAuthority("SCOPE_write")
-	        	.anyRequest()
-	        		.authenticated()
-	       .and()
-	       	.oauth2ResourceServer()
-	       		.jwt();
-		
-		
-		
-		
-		
 		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+		http.authorizeRequests().anyRequest().permitAll();
 	}
 
-/*	@Bean
+	@Bean
 	CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration().applyPermitDefaultValues();
 		configuration.setAllowedMethods(Arrays.asList("POST", "GET", "PUT", "DELETE", "OPTIONS"));
 		final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/**", configuration);
 		return source;
-	}*/
+	}
 }

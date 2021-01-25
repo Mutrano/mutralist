@@ -11,6 +11,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import com.mutra.todo.domain.Todo;
+import com.mutra.todo.dto.TodoDTO;
 import com.mutra.todo.repositories.TodoRepository;
 import com.mutra.todo.services.exceptions.DatabaseException;
 import com.mutra.todo.services.exceptions.ResourceNotFoundException;
@@ -61,6 +62,12 @@ public class TodoService {
 	private void updateData(Todo entity, Todo obj) {
 		entity.setText(obj.getText());
 		entity.setDueDate(obj.getDueDate());
+	}
+	public TodoDTO toDTO(Todo obj) {
+		return new TodoDTO(obj);
+	}
+	public Todo fromDTO(TodoDTO obj) {
+		return new Todo(obj.getId(), obj.getText(), obj.getStartDate(), obj.getStartDate(),obj.getUser());
 	}
 }
 	

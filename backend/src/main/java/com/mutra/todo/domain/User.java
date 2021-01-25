@@ -9,8 +9,12 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "tb_user")
@@ -23,20 +27,25 @@ public class User implements Serializable{
 	
 	private String name;
 	private String email;
+	private String username;
 	private String password;
 	private LocalDate registrationDate;
 	
-	@OneToMany(mappedBy="user")
-	private
-	List<Todo> todos= new ArrayList<>();
+	@OneToMany
+	@JoinTable(name="tb_user_todo",
+	joinColumns = @JoinColumn(name="tb_user"),
+	inverseJoinColumns = @JoinColumn(name="tb_todo")
+			)
+	private List<Todo> todos= new ArrayList<>();
 	
 	public User() {
 	}
 
-	public User(Long id, String name, String email,String password, LocalDate registrationDate) {
+	public User(Long id, String name, String email,String username,String password, LocalDate registrationDate) {
 		this.id = id;
 		this.name = name;
 		this.email=email;
+		this.username=username;
 		this.password = password;
 		this.registrationDate = registrationDate;
 	}
@@ -65,6 +74,14 @@ public class User implements Serializable{
 		this.email = email;
 	}
 
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
 	public String getPassword() {
 		return password;
 	}
@@ -80,7 +97,8 @@ public class User implements Serializable{
 	public void setRegistrationDate(LocalDate registrationDate) {
 		this.registrationDate = registrationDate;
 	}
-
+	
+	@JsonIgnore
 	public List<Todo> getTodos() {
 		return todos;
 	}

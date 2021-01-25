@@ -29,15 +29,18 @@ public class TestConfig implements CommandLineRunner{
 	public void run(String... args) throws Exception {
 		DateTimeFormatter dtf = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).withZone(ZoneId.of("GMT"));
 		
-		User user1 = new User(null, "Mário", "mario@gmail.com", "1234", LocalDate.now());
+		User user1 = new User(null, "Mario", "mario@gmail.com", "mutrano", "123", LocalDate.now());
 		userRepository.saveAll(Arrays.asList(user1));
 		
 		Todo t1= new Todo(null, "Fazer o front-end", LocalDate.now(), LocalDate.now().plusDays(2),user1);
 		Todo t2= new Todo(null, "Fazer o Deploy", LocalDate.now(), LocalDate.now().plusDays(4),user1);
-		
 		user1.getTodos().addAll(Arrays.asList(t1,t2));
-		
 		todoRepository.saveAll(Arrays.asList(t1,t2));
+		
+		
+		userRepository.saveAll(Arrays.asList(user1));
+		System.out.println(user1.getTodos());
+		
 		
 	}
 }
